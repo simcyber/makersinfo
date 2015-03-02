@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>创客Info</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<script src="js/mui.min.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.title {
+				padding: 20px 15px 10px;
+				color: #6d6d72;
+				font-size: 15px;
+				background-color: #fff;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="mui-content">
+
+			<div id="pullrefresh" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<div class="title">
+						正在加载...
+					</div>
+					<ul class="mui-table-view" id="mk-list">
+					</ul>
+				</div>
+			</div>
+			<script>
+			var mk_p=1;
+				mui.init({
+					swipeBack: false,
+					pullRefresh: {
+						container: '#pullrefresh',
+						down: {
+							callback: pulldownRefresh
+						},
+						up: {
+							contentrefresh: '正在加载...',
+							callback: pullupRefresh
+						}
+					}
+				});
+				
+
+				/**
+				 * 下拉刷新具体业务实现
+				 */
+				function pulldownRefresh() {
+					setTimeout(function() {
+						$(".mui-table-view").html("");
+						mk_p=1; 
+						add_list(mk_p);
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+					}, 1000);
+				}
+
+				/**
+				 * 上拉加载具体业务实现
+				 */
+				function pullupRefresh() {
+					setTimeout(function() {
+						mui('#pullrefresh').pullRefresh().endPullupToRefresh(); //参数为true代表没有更多数据了。
+						mk_p=mk_p+1;
+						add_list(mk_p);
+					}, 1000);
+				}
+				
+				mui.plusReady(function(){
+					add_list(mk_p);
+				});
+
+			function add_list(pg){
+				var url="http://nextbig.net/Links/ap_rss/tmp/1/p/"+pg;
+				var html_tmp="";
+				$.getJSON(url,function(result){
+					$(".title").hide();
+				    $.each(result, function(i, field){
+				    	var tmp_url=field.url.toString();
+				    	var tmp_title=field.title.toString();
+						if(field.infos){
+							html_tmp='<li class="mui-table-view-cell mui-media"><a href="###" onclick="eval(show_web(\''+tmp_url+'\',\''+tmp_title+'\'))" ><img class="mui-media-object mui-pull-left" src="'+field.imgurl+'"><div class="mui-media-body">'+field.title+'<p class="mui-ellipsis-2">'+field.infos+'</p></div></a></li>';
+						}else{
+							html_tmp='<li class="mui-table-view-cell mui-media"><a href="###" onclick="eval(show_web(\''+tmp_url+'\',\''+tmp_title+'\'))" ><div class="mui-media-body">'+field.title+'</div></a></li>';
+						}
+				      $(".mui-table-view").append( html_tmp);
+				    });
+				});
+			}
+			
+			function show_web(tag_id,tmp_title){
+			  mui.openWindow({
+			    url: 'bref_rss.html', 
+			    id:'bref_rss.html',
+			    styles:{
+			      top:'0px',//新页面顶部位置
+			      bottom:'0px',
+			    },
+			    extras:{
+			        tag_id:tag_id,
+			        tmp_title:tmp_title
+			    },
+			    waiting:{
+			      autoShow:true,//自动显示等待框，默认为true
+			      title:'正在加载...',
+			      options:{
+			        width:'100px',//等待框背景区域宽度，默认根据内容自动计算合适宽度
+			        height:'100px'
+			      }
+			      }
+			  });
+
+			}
+			</script>
+		</div>
+
+	</body>
+
+</html>

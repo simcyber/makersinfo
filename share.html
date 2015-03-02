@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>分享</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<script src="js/mui.min.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/jquery.min.js"></script>
+	</head>
+
+	<body>
+			<div style="width: 100%; line-height: 50px; font-size: 25px;" id="weixinSession" class="mui-btn mui-btn-outlined mui-btn-primary" onclick="shareAction('weixin','WXSceneSession');">发送给微信好友</div>
+			<div style="width: 100%; line-height: 50px; font-size: 25px;" id="weixinTimeline" class="mui-btn mui-btn-outlined mui-btn-primary" onclick="shareAction('weixin','WXSceneTimeline');">分享到微信朋友圈</div>
+			<div style="width: 100%;  bottom: 0px; position: fixed;"  class="mui-btn mui-btn-negative   mui-btn-block" onclick="shareHide()">取 消</div>
+	<script>
+	
+		var tag_id;
+		var tmp_title;
+		var shares=null,bhref=false;
+			if (window.plus) {
+				plusReady();
+			} else {
+				document.addEventListener("plusready", plusReady, false);
+			}
+			 // 扩展API准备完成后要执行的操作
+			function plusReady() {
+				var self = plus.webview.currentWebview();
+				tag_id = self.tag_id;
+				tmp_title=self.tmp_title;
+				//alert(tmp_title);
+				
+				plus.share.getServices( function(s){
+					shares={};
+					for(var i in s){
+						var t=s[i];
+						shares[t.id]=t;
+					}
+				}, function(e){
+					//outSet( "获取分享服务列表失败："+e.message );
+				} );
+				
+			}
+	
+		function shareHide(){
+			plus.webview.close( "share.html", "auto" );
+		}
+		
+		function shareAction(id,ex) {
+			var s=null;
+			//alert( "分享操作：" );
+			if(!id||!(s=shares[id])){
+				//alert( "无效的分享服务！" );
+				return;
+			}
+			if ( s.authenticated ) {
+				//alert( "---已授权---" );
+				shareMessage(s,ex);
+			} else {
+				//alert( "---未授权---" );
+				s.authorize( function(){
+						shareMessage(s,ex);
+					},function(e){
+					//alert( "认证授权失败："+e.code+" - "+e.message );
+				});
+			}
+		}
+		
+		function shareMessage(s,ex){
+			var msg={content:tmp_title,extra:{scene:ex}};
+				msg.href=tag_id;
+				if(tmp_title!=""){
+					msg.title=tmp_title;
+				}
+				if(tmp_title!=""){
+					msg.content=tmp_title;
+				}
+			s.send( msg, function(){
+				shareHide();
+			}, function(e){
+				shareHide();
+			} );
+		}
+		
+	</script>
+	</body>
+
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 id="title" class="mui-title">创客Info</h1>
+	</header>
+	
+	<!--
+    	作者：qwwbest@163.com
+    	时间：2015-02-23
+    	描述：
+    
+	<nav class="mui-bar mui-bar-tab">
+		<a id="defaultTab" class="mui-tab-item mui-active" href="rss.html">
+			<span class="mui-tab-label">资讯</span>
+		</a>
+		<a class="mui-tab-item" href="shoucang.html">
+			<span class="mui-tab-label">收藏</span>
+		</a>
+	</nav>
+	-->
+		<script type="text/javascript" charset="utf-8">
+			var subpages = ['rss.html','shoucang.html'];
+			var subpage_style = {
+				top: '46px',
+				bottom: '0px'
+			};
+			
+			//创建子页面，首个选项卡页面显示，其它均隐藏；
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+					for(var i=0;i<4;i++){
+						var sub = plus.webview.create(subpages[i],subpages[i],subpage_style);
+						if(i>0){
+							sub.hide();
+						}
+						self.append(sub);
+					}
+			});
+			
+			//当前激活选项
+			var activeTab = subpages[0];
+			var title = document.getElementById("title");
+			//选项卡点击事件
+			mui('.mui-bar-tab').on('tap', 'a', function(e) {
+				plus.webview.close( "bref_rss.html", "auto" );
+				plus.webview.close( "mainweb", "auto" );
+				var targetTab = this.getAttribute('href');
+				if (targetTab == activeTab) {
+					return;
+				}
+				
+				//更换标题
+				title.innerHTML = this.querySelector('.mui-tab-label').innerHTML+"-创客Info";
+				//显示目标选项卡
+				plus.webview.show(targetTab);
+				//隐藏当前;
+				plus.webview.hide(activeTab);
+				//更改当前活跃的选项卡
+				activeTab = targetTab;
+			});
+
+		</script>
+</body>
+</html>

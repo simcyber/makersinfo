@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/md5.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+</head>
+<body>	
+	<nav class="mui-bar mui-bar-tab">
+		<a id="defaultTab" class="mui-tab-item mui-active" href="##" onclick="close_bref_rss();">
+			<span class="mui-tab-label">返回</span>
+		</a>
+		<!--
+		<a id="defaultTab" class="mui-tab-item mui-active" href="##" onclick="add_shoucang();">
+			<span class="mui-tab-label">收藏</span>
+		</a>
+		-->
+		<a class="mui-tab-item" href="###" onclick="add_share();">
+			<span class="mui-tab-label">分享</span>
+		</a>
+	</nav>
+	
+		<script type="text/javascript" charset="utf-8">
+		var tag_id;
+		var tmp_title;
+			if (window.plus) {
+				plusReady();
+			} else {
+				document.addEventListener("plusready", plusReady, false);
+			}
+			 // 扩展API准备完成后要执行的操作
+			function plusReady() {
+				var self = plus.webview.currentWebview();
+				tag_id = self.tag_id;
+				tmp_title=self.tmp_title;
+				var w = plus.webview.open(""+tag_id, "mainweb", {
+					top: '0px',
+					bottom: '50px'
+				});
+			}
+			
+			function close_bref_rss(){
+				plus.webview.close( "mainweb", "auto" );
+				plus.webview.close( "bref_rss.html", "auto" );
+			}
+			
+			function add_shoucang(){
+				var vl=$.md5(tag_id);
+				void plus.storage.setItem(vl, tmp_title+"@@tmp@@"+tag_id);
+				plus.nativeUI.alert( "收藏成功!", function(){
+				}, "温馨提示", "知道了" );
+				plus.webview.close( "mainweb", "auto" );
+				plus.webview.close( "bref_rss.html", "auto" );
+			}
+			
+			function add_share(){
+			  mui.openWindow({
+			    url: 'share.html', 
+			    id:'share.html',
+			    styles:{
+			      height:'200px',//新页面顶部位置
+			      bottom:'0px',
+			    },
+			    extras:{
+			        tag_id:tag_id,
+			        tmp_title:tmp_title
+			    },
+			    waiting:{
+			      autoShow:true,//自动显示等待框，默认为true
+			      title:'正在加载...',
+			      options:{
+			        width:'100px',//等待框背景区域宽度，默认根据内容自动计算合适宽度
+			        height:'100px'
+			      }
+			      }
+			  });
+			}
+
+		</script>
+		
+		
+
+		
+</body>
+</html>
